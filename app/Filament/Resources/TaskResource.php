@@ -17,7 +17,7 @@ class TaskResource extends Resource
 {
     protected static ?string $model = Task::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-fire';
 
     public static function form(Form $form): Form
     {
@@ -40,16 +40,20 @@ class TaskResource extends Resource
                     ->relationship('user', 'name')
                     ->required(),
                 Forms\Components\Select::make('user_id')
-                    ->label('Created By')
-                    ->relationship('user', 'name')
-                    ->required(),
-                Forms\Components\Select::make('update_by')
-                    ->label('Update By')
-                    ->relationship('user', 'name')
-                    ->required(),
-                Forms\Components\Select::make('project_id')
-                    ->relationship('project', 'name')
                     ->required()
+                    ->default(auth()->id())
+                    ->label('Created By')
+                    ->disabled()
+                    ->relationship('user', 'name'),
+                Forms\Components\Select::make('update_by')
+                    ->required()
+                    ->default(auth()->id())
+                    ->label('Update By')
+                    ->disabled()
+                    ->relationship('user', 'name'),
+                Forms\Components\Select::make('project_id')
+                    ->required()
+                    ->relationship('project', 'name')
                     ->createOptionForm([
                         Forms\Components\TextInput::make('name')
                             ->required(),
