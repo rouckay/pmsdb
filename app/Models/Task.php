@@ -21,7 +21,7 @@ class Task extends Model
         'update_by',
         'project_id',
     ];
-    public function user(): BelongsTo
+    public function user(): belongsTo
     {
         return $this->belongsTo(User::class);
     }
