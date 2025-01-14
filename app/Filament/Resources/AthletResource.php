@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Filament\Resources;
-
 use App\Filament\Resources\AthletResource\Pages;
 use App\Filament\Resources\AthletResource\RelationManagers;
 use App\Models\Athlet;
@@ -13,56 +11,54 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-
 class AthletResource extends Resource
 {
     protected static ?string $model = Athlet::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(191),
-                Forms\Components\TextInput::make('father_name')
-                    ->maxLength(191),
-                Forms\Components\TextInput::make('phone_number')
-                    ->tel()
-                    ->maxLength(191),
-                Forms\Components\FileUpload::make('photo')
-                ,
-                Forms\Components\TextInput::make('fees')
-                    ->required()
-                    ->maxLength(191),
-                Forms\Components\Select::make('admission_type')
-                    ->options([
-                        'gym' => 'GYM',
-                        'fitness' => 'Fitness',
-                    ])
-                    ->default('gym')
-                    ->required(),
-                Forms\Components\DatePicker::make('admiission_expiry_date')
-                    ->required(),
-                Forms\Components\Select::make('box_id')
-                    ->relationship('box', 'box_number')
-                    ->searchable()
-                    ->createOptionForm([
-                        Card::make()->
-                            schema([
-                                Forms\Components\TextInput::make('box_number')
-                                    ->required()
-                                    ->prefix('A-')
-                                    ->maxLength(191),
-                                Forms\Components\DatePicker::make('expire_date')
-                                    ->required(),
-                            ])
-                    ])
-                ,
-                Forms\Components\RichEditor::make('details')
-                    ->columnSpanFull(),
+                Card::make()->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->required()
+                        ->maxLength(191),
+                    Forms\Components\TextInput::make('father_name')
+                        ->maxLength(191),
+                    Forms\Components\TextInput::make('phone_number')
+                        ->tel()
+                        ->maxLength(191),
+                    Forms\Components\FileUpload::make('photo'),
+                    Forms\Components\TextInput::make('fees')
+                        ->required()
+                        ->numeric()
+                        ->maxLength(10),
+                    Forms\Components\Select::make('admission_type')
+                        ->options([
+                            'gym' => 'GYM',
+                            'fitness' => 'Fitness',
+                        ])
+                        ->default('gym'),
+                    Forms\Components\DatePicker::make('admiission_expiry_date')
+                        ->required()
+                        ->default(now())
+                    ,
+                    Forms\Components\Select::make('box_id')
+                        ->relationship('box', 'box_number')
+                        ->searchable()
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('box_number')
+                                ->required()
+                                ->prefix('A-')
+                                ->maxLength(191),
+                            Forms\Components\DatePicker::make('expire_date')
+                                ->required(),
+
+                        ])
+                    ,
+                    Forms\Components\RichEditor::make('details')
+                        ->columnSpanFull(),
+                ])->columns(3)
             ]);
     }
 
@@ -75,7 +71,8 @@ class AthletResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('father_name')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('phone_number')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('fees')
