@@ -18,6 +18,8 @@ class BoxResource extends Resource
     protected static ?string $model = Box::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $modelLabel = 'خانه کالا ';
+
 
     public static function form(Form $form): Form
     {
@@ -25,9 +27,11 @@ class BoxResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('box_number')
                     ->required()
+                    ->label('شماره بکس')
                     ->prefix('A-')
                     ->maxLength(191),
                 Forms\Components\DatePicker::make('expire_date')
+                    ->label('ختم تاریخ')
                     ->required(),
             ]);
     }
@@ -37,20 +41,24 @@ class BoxResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('box_number')
+                    ->label('شماره بکس')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('expire_date')
+                    ->label('ختم تاریخ')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('ثبت نیټه')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('تغیر نیټه')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
