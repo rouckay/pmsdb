@@ -21,7 +21,7 @@ return new class extends Migration {
             $table->string('admission_type');
             $table->string('admiission_expiry_date');
             $table->foreignIdFor(Box::class)->nullable();
-            $table->text('details');
+            $table->text('details')->nullable();
             $table->timestamps();
         });
     }

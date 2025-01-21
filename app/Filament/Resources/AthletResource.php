@@ -101,7 +101,6 @@ class AthletResource extends Resource
                             $set('fees', $fees);
                             $set('updated_at', now());
                             $set('admiission_expiry_date', now()->addDays(30));
-                            $set('expire_date', now()->addDays(30));
                         }),
                     Forms\Components\RichEditor::make('details')
                         ->label('تفصیل')
@@ -135,7 +134,7 @@ class AthletResource extends Resource
                 Tables\Columns\TextColumn::make('admiission_expiry_date')
                     ->searchable()
                     ->label('Days Until Expiry')
-                    ->getStateUsing(fn($record) => Carbon::parse($record->admiission_expiry_date)->diffInDays(now())),
+                    ->getStateUsing(fn($record) => floor(Carbon::parse($record->admiission_expiry_date)->diffInDays(now()))),
                 Tables\Columns\TextColumn::make('days_since_created')
                     ->label('Days Since Created')
                     ->getStateUsing(fn($record) => Carbon::parse($record->created_at)->isToday() ? 'Today' : floor(Carbon::parse($record->created_at)->diffInDays(now()))),
