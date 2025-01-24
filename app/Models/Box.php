@@ -9,5 +9,14 @@ class Box extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'box_number',
+        'expire_date',
+        'athlete_id',
+    ];
+
+    public function athlete()
+    {
+        return $this->belongsTo(Athlete::class);
+    }
 }

@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration {
     /**
@@ -12,10 +13,16 @@ return new class extends Migration {
     {
         Schema::create('fees', function (Blueprint $table) {
             $table->id();
-            $table->string('athlet_id');
+            $table->string('athlet_id')->nullable();
             $table->string('fees')->default(500);
             $table->timestamps();
         });
+
+        // Seed data
+        DB::table('fees')->insert([
+            ['athlet_id' => 1, 'fees' => 500],
+            ['athlet_id' => 2, 'fees' => 600],
+        ]);
     }
 
     /**

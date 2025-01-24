@@ -25,8 +25,8 @@ class FeeResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('athlet_id')
-                    ->relationship('althlet', 'name')
+                Forms\Components\Select::make('athlete_id')
+                    ->relationship('athlet', 'name')
                     ->required(),
                 Forms\Components\TextInput::make('fees')
                     ->required()
@@ -34,12 +34,15 @@ class FeeResource extends Resource
                     ->default(500),
             ]);
     }
-
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with('athlet');
+    }
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('athlet_id')
+                Tables\Columns\TextColumn::make('athlet.name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('fees')
                     ->searchable(),
