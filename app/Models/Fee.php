@@ -10,12 +10,12 @@ class Fee extends Model
     use HasFactory;
 
     protected $fillable = [
-        'athlete_id',
+        'athlet_id',
         'fees',
     ];
 
-    public function athlete()
+    public function athlet()
     {
-        return $this->belongsTo(Athlete::class);
+        return $this->belongsTo(Athlet::class);
     }
 }

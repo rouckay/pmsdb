@@ -18,16 +18,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Super Admin User
-        // $admin = User::create([
-        //     'name' => 'Super Admin',
-        //     'email' => 'dev@dev.com',
-        //     'password' => Hash::make('dev'),
-        //     'email_verified_at' => now(),
-        // ]);
-
-        // Assign Filament Super Admin Role
-        // $admin->assignRole('super-admin');
 
         // Seed Boxes
         $box1 = Box::create([
@@ -110,5 +100,17 @@ class DatabaseSeeder extends Seeder
             FeesTableSeeder::class, // Seed fees before athlets
             AthletsTableSeeder::class,
         ]);
+        // Create user
+        // Create Super Admin User
+        $admin = User::create([
+            'name' => 'super-admin',
+            'email' => 'dev@dev.com',
+            'password' => Hash::make('dev'),
+            'email_verified_at' => now(),
+        ]);
+
+        // Assign Filament Super Admin Role
+        $admin->assignRole('panel_user');
+
     }
 }

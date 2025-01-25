@@ -15,7 +15,7 @@ class athlet extends Model
         'photo',
         'fee_id',
         'admission_type',
-        'admiission_expiry_date',
+        'admission_expiry_date',
         'box_id',
         'details',
     ];

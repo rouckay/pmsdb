@@ -20,13 +20,12 @@ class FeeResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $modelLabel = 'فیس ';
 
-
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('athlete_id')
-                    ->relationship('athlet', 'name')
+                    ->relationship('athlete', 'name')
                     ->required(),
                 Forms\Components\TextInput::make('fees')
                     ->required()
@@ -34,15 +33,17 @@ class FeeResource extends Resource
                     ->default(500),
             ]);
     }
+
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->with('athlet');
+        return parent::getEloquentQuery()->with('athlete');
     }
+
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('athlet.name')
+                Tables\Columns\TextColumn::make('athlete.name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('fees')
                     ->searchable(),

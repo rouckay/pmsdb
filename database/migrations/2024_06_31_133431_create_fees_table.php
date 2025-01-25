@@ -13,7 +13,7 @@ return new class extends Migration {
     {
         Schema::create('fees', function (Blueprint $table) {
             $table->id();
-            $table->string('athlet_id')->nullable();
+            $table->foreign('athlet_id')->references('id')->on('athlets')->onDelete('cascade');
             $table->string('fees')->default(500);
             $table->timestamps();
         });
