@@ -127,7 +127,7 @@ class AthletResource extends Resource
                 Tables\Columns\TextColumn::make('days_since_created')
                     ->label('Days Since Created')
                     ->getStateUsing(fn($record) => Carbon::parse($record->created_at)->isToday() ? 'Today' : floor(Carbon::parse($record->created_at)->diffInDays(now()))),
-                Tables\Columns\TextColumn::make('box_id')
+                Tables\Columns\TextColumn::make('box.box_number')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('fee_id.fees')
