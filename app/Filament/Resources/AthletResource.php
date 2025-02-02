@@ -94,6 +94,15 @@ class AthletResource extends Resource
                             }$set('fees', $fees);
                             $set('updated_at', now());
                             $set('admission_expiry_date', now()->addDays(30));
+                        })->rule(function ($get) {
+                            return function ($attribute, $value, $fail) use ($get) {
+                                if ($value) {
+                                    $existingAthlet = Athlet::where('box_id', $value)->first();
+                                    if ($existingAthlet && $existingAthlet->id !== $get('id')) {
+                                        $fail('This box is already assigned to another athlete.');
+                                    }
+                                }
+                            };
                         }),
                     Forms\Components\DatePicker::make('admission_expiry_date')->label('تاریخ ختم فیس')->required()->default(now()->addDays(30)),
                     Forms\Components\RichEditor::make('details')->label('تفصیل')->columnSpanFull(),
@@ -119,19 +128,38 @@ class AthletResource extends Resource
                     ->label('شماره تلفن')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('admission_type')
+                    ->label('بخش')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('admission_expiry_date')
                     ->searchable()
-                    ->label('Days Until Expiry')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        0 => 'danger',
+                        -1 => 'danger',
+                        default => 'warning',
+                    })
+                    ->label('روزهای ختم فیس')
                     ->getStateUsing(fn($record) => floor(Carbon::parse($record->admission_expiry_date)->diffInDays(now()))),
                 Tables\Columns\TextColumn::make('days_since_created')
-                    ->label('Days Since Created')
-                    ->getStateUsing(fn($record) => Carbon::parse($record->created_at)->isToday() ? 'Today' : floor(Carbon::parse($record->created_at)->diffInDays(now()))),
-                Tables\Columns\TextColumn::make('box.box_number')
+                    ->label('تمام روزها')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'امروز' => 'success',
+                        default => 'warning',
+                    })
+                    ->getStateUsing(fn($record) => Carbon::parse($record->created_at)->isToday() ? 'امروز' : floor(Carbon::parse($record->created_at)->diffInDays(now()))),
+                Tables\Columns\TextColumn::make('box_id')
                     ->numeric()
+                    ->label('صندق')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('fee_id.fees')
-
+                Tables\Columns\TextColumn::make('this_month_fees')
+                    ->label(' فیس این ماه')
+                    ->getStateUsing(fn($record) => Fee::where('athlet_id', $record->id)->whereMonth('created_at', now()->month)->sum('fees'))
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        '0' => 'danger',
+                        default => 'warning',
+                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('fees')
                     ->label('فیس')
@@ -147,8 +175,15 @@ class AthletResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\Filter::make('Expiring in 5 days')
-                    ->query(fn(Builder $query) => $query->where('admission_expiry_date', '<=', now()->addDays(5))),
+                Tables\Filters\SelectFilter::make('admission_type')
+                    ->label('نوع ثبت نام')
+                    ->options([
+                        'gym' => 'GYM',
+                        'fitness' => 'Fitness',
+                    ])
+                    ->multiple()
+                ,
+                Tables\Filters\Filter::make('athlet_who_fees_expire_tomorrow')->label('شاګردانی که فیس شان سبا ختم میشود.')->query(fn(Builder $query) => $query->where('admission_expiry_date', '<=', now()->addDays(1))),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
