@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class athlet extends Model
+class Athlet extends Model
 {
     use HasFactory;
     protected $fillable = [
@@ -22,7 +22,7 @@ class athlet extends Model
 
     public function box()
     {
-        return $this->hasOne(Box::class);
+        return $this->belongsTo(Box::class, 'box_id');
     }
     public function fees()
     {

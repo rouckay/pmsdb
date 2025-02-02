@@ -38,14 +38,17 @@ class DatabaseSeeder extends Seeder
         // Seed Fees
         $fee1 = Fee::create([
             'fees' => 500,
+            'athlet_id' => 1,
         ]);
 
         $fee2 = Fee::create([
             'fees' => 600,
+            'athlet_id' => 1,
         ]);
 
         $fee3 = Fee::create([
             'fees' => 700,
+            'athlet_id' => 1,
         ]);
 
         // Seed Athlets
@@ -54,7 +57,6 @@ class DatabaseSeeder extends Seeder
             'father_name' => 'Mr. Doe',
             'phone_number' => '123456789',
             'photo' => null,
-            'fee_id' => $fee1->id,
             'admission_type' => 'Monthly',
             'admission_expiry_date' => now()->addMonth(),
             'box_id' => $box1->id,
@@ -67,7 +69,6 @@ class DatabaseSeeder extends Seeder
             'father_name' => 'Mr. Smith',
             'phone_number' => '987654321',
             'photo' => null,
-            'fee_id' => $fee2->id,
             'admission_type' => 'Quarterly',
             'admission_expiry_date' => now()->addMonths(3),
             'box_id' => $box2->id,
@@ -80,7 +81,6 @@ class DatabaseSeeder extends Seeder
             'father_name' => 'Mr. Brown',
             'phone_number' => '456123789',
             'photo' => null,
-            'fee_id' => $fee3->id,
             'admission_type' => 'Yearly',
             'admission_expiry_date' => now()->addYear(),
             'box_id' => $box3->id,

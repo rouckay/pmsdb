@@ -46,11 +46,13 @@ class AthletResource extends Resource
                         ->imageEditor(),
                     Forms\Components\Select::make('admission_type')
                         ->label('نوع ثبت نام')
+                        ->required()
                         ->options([
                             'gym' => 'GYM',
                             'fitness' => 'Fitness',
                         ])
                         ->default('gym')
+
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set, $get) {
                             $boxId = $get('box_id') ?? null;
@@ -58,9 +60,9 @@ class AthletResource extends Resource
                             if ($boxId) {
                                 $fees += 150;
                             }
-                            $set('fee_id', $fees);
+                            $set('fees', $fees);
                         }),
-                    Forms\Components\TextInput::make('fee_id')
+                    Forms\Components\TextInput::make('fees')
                         ->required()
                         ->label('فیس')
                         ->numeric()
@@ -74,13 +76,13 @@ class AthletResource extends Resource
                             if ($boxId) {
                                 $fees += 150;
                             }
-                            $set('fee_id', $fees);
+                            $set('fees', $fees);
                         }),
-
                     Forms\Components\Select::make('box_id')
                         ->label('صندق')
                         ->relationship('box', 'box_number')
                         ->searchable()
+                        ->nullable() // Make the box_id field optional
                         ->createOptionForm([
                             Forms\Components\TextInput::make('box_number')->required()->prefix('A-')->maxLength(191),
                             Forms\Components\DatePicker::make('expire_date')->required()->default(now()->addDays(30)),
@@ -89,7 +91,7 @@ class AthletResource extends Resource
                             $fees = $admissionType === 'gym' ? 500 : 1000;
                             if ($state) {
                                 $fees += 150;
-                            }$set('fee_id', $fees);
+                            }$set('fees', $fees);
                             $set('updated_at', now());
                             $set('admission_expiry_date', now()->addDays(30));
                         }),
@@ -128,8 +130,12 @@ class AthletResource extends Resource
                 Tables\Columns\TextColumn::make('box_id')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('fees.fees')
+                Tables\Columns\TextColumn::make('fee_id.fees')
 
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('fees')
+                    ->label('فیس')
+                    ->getStateUsing(fn($record) => Fee::where('athlet_id', $record->id)->sum('fees'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -157,7 +163,7 @@ class AthletResource extends Resource
                             $fees += 150;
                         }
                         Fee::create([
-                            'athlete_id' => $record->id,
+                            'athlet_id' => $record->id,
                             'fees' => $fees,
                         ]);
                         $record->admission_expiry_date = now()->addDays(30);
@@ -174,6 +180,7 @@ class AthletResource extends Resource
                             ->label('صندق')
                             ->relationship('box', 'box_number')
                             ->searchable()
+                            ->nullable() // Make the box_id field optional
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('box_number')
                                     ->required()
@@ -186,9 +193,11 @@ class AthletResource extends Resource
                             ->reactive()
                             ->rule(function ($get) {
                                 return function ($attribute, $value, $fail) use ($get) {
-                                    $existingAthlet = Athlet::where('box_id', $value)->first();
-                                    if ($existingAthlet && $existingAthlet->id !== $get('id')) {
-                                        $fail('This box is already assigned to another athlete.');
+                                    if ($value) {
+                                        $existingAthlet = Athlet::where('box_id', $value)->first();
+                                        if ($existingAthlet && $existingAthlet->id !== $get('id')) {
+                                            $fail('This box is already assigned to another athlete.');
+                                        }
                                     }
                                 };
                             }),

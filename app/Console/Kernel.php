@@ -4,7 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use App\Models\Athlete;
+use App\Models\Athlet;
 use App\Models\Box;
 use Carbon\Carbon;
 
@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
-            $expiringAthletes = Athlete::where('admission_expiry_date', '<=', Carbon::now()->addDays(5))->get();
+            $expiringAthletes = Athlet::where('admission_expiry_date', '<=', Carbon::now()->addDays(5))->get();
             foreach ($expiringAthletes as $athlete) {
                 // Notify admin about expiring athlete fees
                 // You can use your preferred notification method here

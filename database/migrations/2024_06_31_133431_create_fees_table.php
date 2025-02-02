@@ -13,7 +13,7 @@ return new class extends Migration {
     {
         Schema::create('fees', function (Blueprint $table) {
             $table->id();
-            $table->foreign('athlet_id')->references('id')->on('athlets')->onDelete('cascade');
+            $table->unsignedBigInteger('athlet_id');
             $table->string('fees')->default(500);
             $table->timestamps();
         });

@@ -14,7 +14,8 @@ class Fee extends Model
         'fees',
     ];
 
-    public function athlet()
+
+    public function athlete()
     {
         return $this->belongsTo(Athlet::class);
     }

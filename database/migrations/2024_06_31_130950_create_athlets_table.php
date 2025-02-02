@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->string('father_name')->nullable();
             $table->string('phone_number');
             $table->string('photo')->nullable();
-            $table->foreignIdFor(Fee::class)->constrained()->cascadeOnDelete()->nullable();
             $table->string('admission_type');
             $table->string('admission_expiry_date');
             $table->foreignIdFor(Box::class)->onDelete('set null')->nullable()->unique();

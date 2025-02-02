@@ -18,7 +18,6 @@ class AthletsTableSeeder extends Seeder
                 'father_name' => 'Richard Roe',
                 'phone_number' => '1234567890',
                 'photo' => null,
-                'fee_id' => 1, // Ensure this matches an existing fee id
                 'admission_type' => 'Regular',
                 'admission_expiry_date' => '2025-12-31',
                 'box_id' => 1,
@@ -29,7 +28,6 @@ class AthletsTableSeeder extends Seeder
                 'father_name' => 'John Smith',
                 'phone_number' => '0987654321',
                 'photo' => null,
-                'fee_id' => 2, // Ensure this matches an existing fee id
                 'admission_type' => 'Regular',
                 'admission_expiry_date' => '2025-12-31',
                 'box_id' => 2,
