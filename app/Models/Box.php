@@ -12,11 +12,11 @@ class Box extends Model
     protected $fillable = [
         'box_number',
         'expire_date',
-        'athlete_id',
+        'athlet_id',
     ];
 
-    public function athlete()
+    public function athlet()
     {
-        return $this->belongsTo(Athlete::class);
+        return $this->belongsTo(Athlet::class);
     }
 }

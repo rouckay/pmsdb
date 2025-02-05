@@ -13,7 +13,10 @@
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "mokhosh/filament-kanban": "^2.8",
-        "spatie/laravel-permission": "^6.9"
+        "spatie/laravel-permission": "^6.9",
+        "tapp/filament-value-range-filter": "*",
+        "tomatophp/filament-pwa": "^1.0",
+        "yemenopensource/filament-excel": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

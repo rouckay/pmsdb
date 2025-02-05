@@ -20,7 +20,6 @@ class AthletResource extends Resource
     protected static ?string $model = Athlet::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-
     protected static ?string $modelLabel = 'شاګرد ';
 
     public static function form(Form $form): Form
@@ -52,7 +51,6 @@ class AthletResource extends Resource
                             'fitness' => 'Fitness',
                         ])
                         ->default('gym')
-
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set, $get) {
                             $boxId = $get('box_id') ?? null;
@@ -62,27 +60,12 @@ class AthletResource extends Resource
                             }
                             $set('fees', $fees);
                         }),
-                    Forms\Components\TextInput::make('fees')
-                        ->required()
-                        ->label('فیس')
-                        ->numeric()
-                        ->maxLength(10)
-                        ->default(500)
-                        ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, $get) {
-                            $admissionType = $get('admission_type') ?? 'gym';
-                            $boxId = $get('box_id') ?? null;
-                            $fees = $admissionType === 'gym' ? 500 : 1000;
-                            if ($boxId) {
-                                $fees += 150;
-                            }
-                            $set('fees', $fees);
-                        }),
+
                     Forms\Components\Select::make('box_id')
                         ->label('صندق')
                         ->relationship('box', 'box_number')
                         ->searchable()
-                        ->nullable() // Make the box_id field optional
+                        ->nullable()
                         ->createOptionForm([
                             Forms\Components\TextInput::make('box_number')->required()->prefix('A-')->maxLength(191),
                             Forms\Components\DatePicker::make('expire_date')->required()->default(now()->addDays(30)),
@@ -91,7 +74,8 @@ class AthletResource extends Resource
                             $fees = $admissionType === 'gym' ? 500 : 1000;
                             if ($state) {
                                 $fees += 150;
-                            }$set('fees', $fees);
+                            }
+                            $set('fees', $fees);
                             $set('updated_at', now());
                             $set('admission_expiry_date', now()->addDays(30));
                         })->rule(function ($get) {
@@ -181,15 +165,16 @@ class AthletResource extends Resource
                         'gym' => 'GYM',
                         'fitness' => 'Fitness',
                     ])
-                    ->multiple()
-                ,
+                    ->multiple(),
                 Tables\Filters\Filter::make('athlet_who_fees_expire_tomorrow')->label('شاګردانی که فیس شان سبا ختم میشود.')->query(fn(Builder $query) => $query->where('admission_expiry_date', '<=', now()->addDays(1))),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('collectFee')
-                    ->label('Collect Fee')
+                    ->label('جمع فیس و صندق')
+                    ->button()
+                    ->color('success')
                     ->action(function ($record, $data) {
                         $admissionType = $record->admission_type ?? 'gym';
                         $boxId = $data['box_id'] ?? null;
@@ -206,36 +191,42 @@ class AthletResource extends Resource
                         $record->save();
                     })
                     ->form([
-                        Forms\Components\TextInput::make('fees')
-                            ->label('فیس')
-                            ->required()
-                            ->numeric()
-                            ->default(500),
-                        Forms\Components\Select::make('box_id')
-                            ->label('صندق')
-                            ->relationship('box', 'box_number')
-                            ->searchable()
-                            ->nullable() // Make the box_id field optional
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('box_number')
-                                    ->required()
-                                    ->prefix('A-')
-                                    ->maxLength(191),
-                                Forms\Components\DatePicker::make('expire_date')
-                                    ->required()
-                                    ->default(now()->addDays(30)),
-                            ])
-                            ->reactive()
-                            ->rule(function ($get) {
-                                return function ($attribute, $value, $fail) use ($get) {
-                                    if ($value) {
-                                        $existingAthlet = Athlet::where('box_id', $value)->first();
-                                        if ($existingAthlet && $existingAthlet->id !== $get('id')) {
-                                            $fail('This box is already assigned to another athlete.');
+                        Forms\Components\Grid::make(2)->schema([
+                            Forms\Components\TextInput::make('fees')
+                                ->label('فیس')
+                                ->required()
+                                ->numeric()
+                                ->default(500),
+                            Forms\Components\Select::make('box_id')
+                                ->label('صندق')
+                                ->relationship('box', 'box_number')
+                                ->searchable()
+                                ->nullable()
+                                ->createOptionForm([
+                                    Forms\Components\Grid::make(2)->schema([
+                                        Forms\Components\TextInput::make('box_number')
+                                            ->required()
+                                            ->label('د باکس نمبر')
+                                            ->prefix('A-')
+                                            ->maxLength(191),
+                                        Forms\Components\DatePicker::make('expire_date')
+                                            ->label('ختم تاریخ')
+                                            ->required()
+                                            ->default(now()->addDays(30)),
+                                    ])
+                                ])
+                                ->reactive()
+                                ->rule(function ($get) {
+                                    return function ($attribute, $value, $fail) use ($get) {
+                                        if ($value) {
+                                            $existingAthlet = Athlet::where('box_id', $value)->first();
+                                            if ($existingAthlet && $existingAthlet->id !== $get('id')) {
+                                                $fail('This box is already assigned to another athlete.');
+                                            }
                                         }
-                                    }
-                                };
-                            }),
+                                    };
+                                }),
+                        ]),
                     ]),
             ])
             ->bulkActions([
@@ -244,7 +235,6 @@ class AthletResource extends Resource
                 ]),
             ])
             ->headerActions([
-
                 Tables\Actions\Action::make('totalfees')
                     ->label('Total Fees: ' . Fee::sum('fees')),
                 Tables\Actions\Action::make('totalAthletes')

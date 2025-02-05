@@ -45,7 +45,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
+                // Widgets\AccountWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -65,6 +65,6 @@ class AdminPanelProvider extends PanelProvider
                         ->defaultLocales(['en', 'fa']),
                     \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
                     // FilamentSpatieRolesPermissionsPlugin::make()
-                ]);
+                ])->plugin(\TomatoPHP\FilamentPWA\FilamentPWAPlugin::make());
     }
 }
